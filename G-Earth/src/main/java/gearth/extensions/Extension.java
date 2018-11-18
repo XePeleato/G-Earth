@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Created by Jonas on 23/06/18.
  */
-public abstract class Extension {
+public abstract class Extension implements IExtension{
 
     public interface MessageListener {
         void act(HMessage message);
@@ -134,6 +134,10 @@ public abstract class Extension {
                     writeToStream(response.toBytes());
                 }
                 else if (packet.headerId() == Extensions.OUTGOING_MESSAGES_IDS.CONNECTIONSTART) {
+                    String host = packet.readString();
+                    int connectionPort = packet.readInteger();
+                    String hotelVersion = packet.readString();
+                    notifyConnectionListeners(host, connectionPort, hotelVersion);
                     onStartConnection();
                 }
                 else if (packet.headerId() == Extensions.OUTGOING_MESSAGES_IDS.CONNECTIONEND) {
@@ -228,7 +232,7 @@ public abstract class Extension {
      * @param packet packet to be sent
      * @return success or failure
      */
-    protected boolean sendToClient(HPacket packet) {
+    public boolean sendToClient(HPacket packet) {
         return send(packet, HMessage.Side.TOCLIENT);
     }
 
@@ -237,7 +241,7 @@ public abstract class Extension {
      * @param packet packet to be sent
      * @return success or failure
      */
-    protected boolean sendToServer(HPacket packet) {
+    public boolean sendToServer(HPacket packet) {
         return send(packet, HMessage.Side.TOSERVER);
     }
     private boolean send(HPacket packet, HMessage.Side side) {
@@ -259,7 +263,7 @@ public abstract class Extension {
      * @param headerId the packet header ID
      * @param messageListener the callback
      */
-    protected void intercept(HMessage.Side side, int headerId, MessageListener messageListener) {
+    public void intercept(HMessage.Side side, int headerId, MessageListener messageListener) {
         Map<Integer, List<MessageListener>> listeners =
                 side == HMessage.Side.TOCLIENT ?
                         incomingMessageListeners :
@@ -280,7 +284,7 @@ public abstract class Extension {
      * @param side ToClient or ToServer
      * @param messageListener the callback
      */
-    protected void intercept(HMessage.Side side, MessageListener messageListener) {
+    public void intercept(HMessage.Side side, MessageListener messageListener) {
         intercept(side, -1, messageListener);
     }
 
@@ -290,7 +294,7 @@ public abstract class Extension {
      * @param flagRequestCallback callback
      * @return if the request was successful, will return false if another flagrequest is busy
      */
-    protected boolean requestFlags(FlagsCheckListener flagRequestCallback) {
+    public boolean requestFlags(FlagsCheckListener flagRequestCallback) {
         if (this.flagRequestCallback != null) return false;
         this.flagRequestCallback = flagRequestCallback;
         return true;
@@ -300,7 +304,7 @@ public abstract class Extension {
      * Write to the console in G-Earth
      * @param s the text to be written
      */
-    protected void writeToConsole(String s) {
+    public void writeToConsole(String s) {
         HPacket packet = new HPacket(Extensions.INCOMING_MESSAGES_IDS.EXTENSIONCONSOLELOG);
         packet.appendString(s);
         try {
@@ -359,8 +363,22 @@ public abstract class Extension {
         return true;
     }
 
-
     ExtensionInfo getInfoAnnotations() {
         return getClass().getAnnotation(ExtensionInfo.class);
     }
+
+
+    public interface OnConnectionListener {
+        void act(String host, int port, String hotelversion);
+    }
+    private List<OnConnectionListener> onConnectionListeners = new ArrayList<>();
+    public void onConnect(OnConnectionListener listener){
+        onConnectionListeners.add(listener);
+    }
+    private void notifyConnectionListeners(String host, int port, String hotelversion) {
+        for (OnConnectionListener listener : onConnectionListeners) {
+            listener.act(host, port, hotelversion);
+        }
+    }
+
 }
