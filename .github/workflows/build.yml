@@ -40,13 +40,13 @@ jobs:
             artifact_name: G-Mem.exe
     steps:
       - name: rust-cargo
-      - uses: actions-rs/cargo@v1.0.1
+        uses: actions-rs/cargo@v1.0.1
         with:
           command: build
           args: --release --manifest-path=G-Mem/Cargo.toml
 
       - name: Release artifact
-      - uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v1
         with:
           name: G-Earth-${{ matrix.os }}
           path: G-Mem/target/release/${{ matrix.artifact_name }}
