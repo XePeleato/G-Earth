@@ -22,15 +22,11 @@ jobs:
 
       - name: rust-cargo
         uses: actions-rs/cargo@v1.0.1
+        env:
+          CARGO_TARGET_DIR: G-Earth/target/bin
         with:
           command: build
           args: --release --manifest-path=G-Mem/Cargo.toml
-
-      - name: Copy G-Mem
-        uses: canastro/copy-file-action@master
-        with:
-          source: "G-Mem/target/release/G-Mem*"
-          target: "G-Earth/target/bin/"
 
       - name: Release artifact
         uses: actions/upload-artifact@v1
