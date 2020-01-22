@@ -5,7 +5,10 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v1
@@ -19,4 +22,4 @@ jobs:
       uses: actions-rs/cargo@v1.0.1
       with:
         command: build
-        args: --manifest-path=G-Mem/Cargo.toml
+        args: --release --manifest-path=G-Mem/Cargo.toml
