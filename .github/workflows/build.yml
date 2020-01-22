@@ -29,7 +29,7 @@ jobs:
       - name: Copy G-Mem
         uses: canastro/copy-file-action@master
         with:
-          source: "G-Mem/target/release/*"
+          source: "G-Mem/target/release/G-Mem*"
           target: "G-Earth/target/bin/"
 
       - name: Release artifact
