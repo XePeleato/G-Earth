@@ -23,3 +23,17 @@ jobs:
       with:
         command: build
         args: --release --manifest-path=G-Mem/Cargo.toml
+
+    - name: Copy G-Mem
+      steps:
+        - uses: canastro/copy-file-action@master
+          with:
+            source: "G-Mem/target/release/*"
+            target: "G-Earth/target/bin/"
+
+    - name: Release artifact
+      steps:
+        - uses: actions/upload-artifact@v1
+        - with:
+          name: G-Earth-${{ matrix.os }}
+          path: G-Earth/target/bin
