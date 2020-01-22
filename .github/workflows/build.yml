@@ -34,6 +34,6 @@ jobs:
     - name: Release artifact
       steps:
         - uses: actions/upload-artifact@v1
-        - with:
-          name: G-Earth-${{ matrix.os }}
-          path: G-Earth/target/bin
+          with:
+            name: G-Earth-${{ matrix.os }}
+            path: G-Earth/target/bin
