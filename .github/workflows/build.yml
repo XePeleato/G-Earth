@@ -3,7 +3,7 @@ name: Java CI
 on: [push]
 
 jobs:
-  build:
+  build_java:
 
     runs-on: ${{ matrix.os }}
     strategy:
@@ -20,10 +20,27 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
+      - name: Release artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: G-Earth-${{ matrix.os }}
+          path: G-Earth/target/bin/G-Earth.jar
+
+  build_rust:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        name: [ubuntu-latest, windows-latest]
+        include:
+          - name: linux
+            os: ubuntu-latest
+            artifact_name: G-Mem
+          - name: windows
+            os: windows-latest
+            artifact_name: G-Mem.exe
+
       - name: rust-cargo
         uses: actions-rs/cargo@v1.0.1
-        env:
-          CARGO_TARGET_DIR: G-Earth/target/bin
         with:
           command: build
           args: --release --manifest-path=G-Mem/Cargo.toml
@@ -32,4 +49,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: G-Earth-${{ matrix.os }}
-          path: G-Earth/target/bin
+          path: G-Mem/target/release/${{ matrix.artifact_name }}
