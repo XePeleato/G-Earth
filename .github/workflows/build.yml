@@ -16,8 +16,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+
       - name: rust-cargo
         uses: actions-rs/cargo@v1.0.1
         with:
@@ -25,13 +27,13 @@ jobs:
           args: --release --manifest-path=G-Mem/Cargo.toml
 
       - name: Copy G-Mem
-      - uses: canastro/copy-file-action@master
+        uses: canastro/copy-file-action@master
         with:
           source: "G-Mem/target/release/*"
           target: "G-Earth/target/bin/"
 
       - name: Release artifact
-      - uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v1
         with:
           name: G-Earth-${{ matrix.os }}
           path: G-Earth/target/bin
