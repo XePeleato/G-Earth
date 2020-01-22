@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build_java:
-
+    name: Build java part
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -27,6 +27,8 @@ jobs:
           path: G-Earth/target/bin/G-Earth.jar
 
   build_rust:
+    name: Build rust part
+    needs: build_java
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
