@@ -19,6 +19,7 @@
         <!-- Compile our extensions too please! -->
         <module>Extensions/AdminOnConnect</module>
         <module>Extensions/BlockReplacePackets</module>
+        <module>Extensions/G-Messenger</module>
     </modules>
 
     <build>
